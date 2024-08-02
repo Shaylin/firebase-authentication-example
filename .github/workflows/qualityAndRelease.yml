@@ -35,10 +35,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Semantic Release
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20.x"
-      - run: npm install
-      - run: npx semantic-release
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
