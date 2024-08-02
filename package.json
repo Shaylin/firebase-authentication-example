@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test": "npx jest"
   },
+  "repository": "https://github.com/Shaylin/firebase-authentication-example",
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.7",
     "firebase": "^10.12.5",
@@ -36,5 +37,15 @@
     "ts-jest": "^29.2.3",
     "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
   }
 }
