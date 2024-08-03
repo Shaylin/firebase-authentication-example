@@ -2,8 +2,11 @@ import UserManagementService from "@/services/userManagement/userManagementServi
 import { FirebaseApp } from "firebase/app";
 import { FirebaseOptions } from "@firebase/app-types";
 import { Auth, UserCredential } from "firebase/auth";
+import { app } from "firebase-admin";
+import App = app.App;
 
 export default class FirebaseUserManagementService implements UserManagementService {
+  private readonly firebaseAdminApp: App;
   private readonly firebaseApp: FirebaseApp;
   private readonly firebaseAuth: Auth;
   private readonly createUserWithEmailAndPasswordDelegate: (auth: Auth, email: string, password: string) => Promise<UserCredential>;
@@ -15,7 +18,8 @@ export default class FirebaseUserManagementService implements UserManagementServ
     getAuthDelegate: (app: FirebaseApp) => Auth,
     createUserWithEmailAndPasswordDelegate: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
     signInWithEmailAndPasswordDelegate: (auth: Auth, email: string, password: string) => Promise<UserCredential>,
-    signOutDelegate: (auth: Auth) => Promise<void>
+    signOutDelegate: (auth: Auth) => Promise<void>,
+    firebaseAdminApp: App
   ) {
     this.firebaseApp = initializeAppDelegate({
       apiKey: process.env.FIREBASE_API_KEY!,
@@ -32,12 +36,26 @@ export default class FirebaseUserManagementService implements UserManagementServ
     this.createUserWithEmailAndPasswordDelegate = createUserWithEmailAndPasswordDelegate;
     this.signInWithEmailAndPasswordDelegate = signInWithEmailAndPasswordDelegate;
     this.signOutDelegate = signOutDelegate;
+    
+    this.firebaseAdminApp = firebaseAdminApp;
   }
   
   async createUser(email: string, password: string): Promise<string> {
     const userCredentials = await this.createUserWithEmailAndPasswordDelegate(this.firebaseAuth, email, password);
     
     return await userCredentials.user.getIdToken();
+  }
+  
+  async verifyUser(userIdToken: string): Promise<boolean> {
+    const decodedIdToken = await this.firebaseAdminApp.auth().verifyIdToken(userIdToken);
+    
+    return !!decodedIdToken;
+  }
+  
+  async updatePassword(email: string, newPassword: string): Promise<void> {
+    const userRecord = await this.firebaseAdminApp.auth().getUserByEmail(email);
+    
+    await this.firebaseAdminApp.auth().updateUser(userRecord.uid, { password: newPassword });
   }
   
   async login(email: string, password: string): Promise<string> {

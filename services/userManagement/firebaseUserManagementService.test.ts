@@ -2,6 +2,11 @@ import FirebaseUserManagementService from "@/services/userManagement/firebaseUse
 import { MockProxy, mock } from "jest-mock-extended";
 import { FirebaseApp } from "firebase/app";
 import { Auth } from "firebase/auth";
+import { app, auth } from "firebase-admin";
+import * as AdminAuth from "firebase-admin/auth"
+import App = app.App;
+import DecodedIdToken = auth.DecodedIdToken;
+import { UserRecord } from "firebase-admin/auth";
 
 describe("Firebase User Management Service", () => {
   let service: FirebaseUserManagementService;
@@ -11,6 +16,7 @@ describe("Firebase User Management Service", () => {
   let mockSignInWithEmailAndPassword = jest.fn();
   let mockSignOut = jest.fn();
   let mockFirebaseApp: MockProxy<FirebaseApp>;
+  let mockFirebaseAdminApp: MockProxy<App>;
   let mockFirebaseAuth: MockProxy<Auth>;
   
   beforeEach(() => {
@@ -24,6 +30,7 @@ describe("Firebase User Management Service", () => {
     
     mockFirebaseApp = mock<FirebaseApp>();
     mockFirebaseAuth = mock<Auth>();
+    mockFirebaseAdminApp = mock<App>();
     
     mockInitializeApp.mockReturnValue(mockFirebaseApp);
     mockGetAuth.mockReturnValue(mockFirebaseAuth);
@@ -33,7 +40,8 @@ describe("Firebase User Management Service", () => {
       mockGetAuth,
       mockCreateUserWithEmailAndPassword,
       mockSignInWithEmailAndPassword,
-      mockSignOut
+      mockSignOut,
+      mockFirebaseAdminApp
     );
   });
   
@@ -66,6 +74,34 @@ describe("Firebase User Management Service", () => {
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(mockFirebaseAuth, "bugcat@capoo.com", "Password1234$");
       
       expect(returnedToken).toBe("some-id-token");
+    });
+  });
+  
+  describe("verifyUser", () => {
+    it("Should verifyUser the by invoking the admin api", async () => {
+      const mockAuth: MockProxy<AdminAuth.Auth> = mock<AdminAuth.Auth>();
+      mockAuth.verifyIdToken.mockResolvedValue("111" as unknown as DecodedIdToken);
+      
+      mockFirebaseAdminApp.auth.mockReturnValue(mockAuth);
+      
+      const verificationResult = await service.verifyUser("babbel");
+      
+      expect(mockAuth.verifyIdToken).toHaveBeenCalledWith("babbel");
+      
+      expect(verificationResult).toBe(true);
+    });
+  });
+  
+  describe("updatePassword", () => {
+    it("Should retrieve the user by their email and update their password using the admin api", async () => {
+      const mockAuth: MockProxy<AdminAuth.Auth> = mock<AdminAuth.Auth>();
+      mockAuth.getUserByEmail.mockResolvedValue({ uid: "abc" } as unknown as UserRecord);
+      
+      mockFirebaseAdminApp.auth.mockReturnValue(mockAuth);
+      
+      await service.updatePassword("tester@test.com", "newPassword123");
+      
+      expect(mockAuth.updateUser).toHaveBeenCalledWith("abc", { password: "newPassword123" });
     });
   });
   

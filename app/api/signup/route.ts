@@ -1,34 +1,35 @@
 import ServiceRegistry from "@/services/serviceRegistry";
 import SignupRequest from "@/app/api/signup/signupRequest";
-import { setCookie } from "nookies";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextApiRequest, response: NextApiResponse) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   const validationService = ServiceRegistry.getValidationService();
   const userManagementService = ServiceRegistry.getUserManagementService();
   
-  const requestBody = request.body as SignupRequest;
+  const requestBody = await request.json() as SignupRequest;
   
   if (!validationService.isValidEmail(requestBody.email)) {
-    response.status(400).json({ error: "Invalid email address." });
+    return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
   }
   
   if (!validationService.isStrongPassword(requestBody.password)) {
-    response.status(400).json({
+    return NextResponse.json({
       error: "Please use a password with at least 8 characters and at least one uppercase character, lowercase character and symbol."
-    });
+    }, { status: 400 });
   }
   
   try {
     const userIdToken = await userManagementService.createUser(requestBody.email, requestBody.password);
     
-    setCookie({ res: response }, "token", userIdToken, {
+    const response = NextResponse.json({ message: "Signed up successfully." }, { status: 200 });
+    
+    response.cookies.set("token", userIdToken, {
       maxAge: 30 * 24 * 60 * 60,
       path: "/",
     });
     
-    response.status(200).json({ message: "Signed up successfully." });
+    return response;
   } catch {
-    response.status(500).json({ error: "There was an error signing up." });
+    return NextResponse.json({ error: "There was an error signing up." }, { status: 500 });
   }
 }

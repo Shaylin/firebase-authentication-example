@@ -3,5 +3,9 @@ export default interface UserManagementService {
   
   login(email: string, password: string): Promise<string>;
   
+  verifyUser(userIdToken: string): Promise<boolean>;
+  
+  updatePassword(email: string, newPassword: string): Promise<void>;
+  
   logout(): Promise<void>;
 }

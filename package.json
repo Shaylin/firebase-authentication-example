@@ -17,16 +17,17 @@
     "url": "https://github.com/Shaylin/firebase-authentication-example.git"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.609.0",
-    "@reduxjs/toolkit": "^2.2.7",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@fontsource/roboto": "^5.0.13",
+    "@mui/material": "^5.16.6",
     "firebase": "^10.12.5",
+    "firebase-admin": "^12.3.0",
     "install": "^0.13.0",
     "next": "14.2.5",
-    "nookies": "^2.5.2",
     "npm": "^10.8.2",
     "react": "^18",
     "react-dom": "^18",
-    "react-redux": "^9.1.2",
     "validator": "^13.12.0"
   },
   "devDependencies": {
@@ -67,7 +68,7 @@
             "package.json",
             "package-lock.json"
           ],
-          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n{nextReleae.notes}"
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
         }
       ],
       "@semantic-release/github"
