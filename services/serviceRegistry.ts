@@ -6,7 +6,6 @@ import FirebaseUserManagementService from "@/services/userManagement/firebaseUse
 import { initializeApp } from "@firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, getAuth } from "firebase/auth";
 import admin, { ServiceAccount } from "firebase-admin";
-import firebaseServiceAccount from "../firebaseServiceAccount.json";
 
 export default class ServiceRegistry {
   private static validationService: ValidationService;
@@ -26,7 +25,13 @@ export default class ServiceRegistry {
   public static getUserManagementService(): UserManagementService {
     if (this.userManagementService == null) {
       const adminApp = admin.apps.length ? admin.apps[0] : admin.initializeApp({
-        credential: admin.credential.cert(firebaseServiceAccount as unknown as ServiceAccount),
+        credential: admin.credential.cert({
+          type: "service_account",
+          project_id: process.env.FIREBASE_PROJECT_ID,
+          private_key_id: process.env.FIREBASE_ADMIN_PRIVATE_KEY_ID,
+          private_key: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
+          client_email: process.env.FIREBASE_ADMIN_CLIENT_EMAIL
+        } as unknown as ServiceAccount),
       });
       
       this.userManagementService = new FirebaseUserManagementService(
