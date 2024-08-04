@@ -1,35 +1,20 @@
 import styles from "./page.module.scss";
 import MainMenu from "@/components/mainMenu/mainMenu";
-import { useUser } from "@/contexts/userContext";
-import { GetServerSideProps } from "next";
 import verifyToken from "@/utils/verifyToken";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { req, res } = context;
-  const token = req.cookies.token || "";
-  
-  const isVerified = await verifyToken(token);
-  
-  if (!isVerified) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
+export default async function Home(props: { isVerifiedUser: boolean }) {
+  const token = cookies().get("token")?.value || "";
+  const user = await verifyToken(token);
+
+  if (!user) {
+    redirect("/login");
   }
-  
-  return {
-    props: { isVerifiedUser: isVerified },
-  };
-};
-
-export default function Home(props: { isVerifiedUser: boolean }) {
-  const { user } = useUser();
   
   return (
     <main className={styles.main}>
-      {!!user ?
+      {user ?
         <>
           <h1>Main Menu</h1>
           <div className={styles.menu}>
