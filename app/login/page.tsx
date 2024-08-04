@@ -10,8 +10,9 @@ import { Divider } from "@mui/material";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import Button from "@mui/material/Button";
 import LoginIcon from "@mui/icons-material/Login";
+import { Suspense } from "react";
 
-export default function Login() {
+function Login() {
   const searchParams = useSearchParams();
   const [wasLoggedOut, setWasLoggedOut] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(true);
@@ -81,5 +82,13 @@ export default function Login() {
         message="Signed up successfully. Please log in."
       />
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Login/>
+    </Suspense>
   );
 }

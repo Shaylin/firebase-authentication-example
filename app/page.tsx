@@ -4,7 +4,7 @@ import verifyToken from "@/utils/verifyToken";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
-export default async function Home(props: { isVerifiedUser: boolean }) {
+export default async function Home() {
   const token = cookies().get("token")?.value || "";
   const user = await verifyToken(token);
 
