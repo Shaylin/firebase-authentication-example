@@ -66,3 +66,9 @@
 - All firebase operations have been implemented behind a `UserManagementService` interface.
 - In the future, any back end implementing this interface could be used.
 - A similar dependency inversion has been implemented for email and password validation.
+
+## Preview
+
+
+https://github.com/user-attachments/assets/3baefdd8-79eb-49f7-92ef-98d8f321d423
+
