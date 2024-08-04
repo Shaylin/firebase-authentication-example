@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
+import Divider from "@mui/material/Divider";
 
 export default function MainMenu(): JSX.Element {
   const router = useRouter();
@@ -34,6 +35,9 @@ export default function MainMenu(): JSX.Element {
           onClick={navigateToProfile}>
           Profile Management
         </Button>
+        
+        <Divider orientation="horizontal" flexItem/>
+        
         <Button variant="contained" fullWidth size="large" color="error" endIcon={<LogoutIcon/>}
           onClick={initiateLogout}>
           Log Out

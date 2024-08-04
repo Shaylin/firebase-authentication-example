@@ -3,7 +3,7 @@
 import Snackbar from "@mui/material/Snackbar";
 import styles from "./page.module.scss";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import LoginForm from "@/components/loginForm/loginForm";
 import SignupForm from "@/components/signupForm/signupForm";
 import { Divider } from "@mui/material";
@@ -22,6 +22,20 @@ export default function Login() {
       setWasLoggedOut(true);
     }
   }, [searchParams]);
+  
+  const handleLoggedOutMessageClose = (event: Event | React.SyntheticEvent<any>, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setWasLoggedOut(false);
+  };
+  
+  const handleSignedUpSuccessfullyClosed = (event: Event | React.SyntheticEvent<any>, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSignedUpSuccessfully(false);
+  };
   
   const onSignUpSuccess = () => {
     setIsLoggingIn(true);
@@ -57,11 +71,13 @@ export default function Login() {
       <Snackbar
         open={wasLoggedOut}
         autoHideDuration={5000}
+        onClose={handleLoggedOutMessageClose}
         message="You have been logged out."
       />
       <Snackbar
         open={signedUpSuccessfully}
         autoHideDuration={5000}
+        onClose={handleSignedUpSuccessfullyClosed}
         message="Signed up successfully. Please log in."
       />
     </>

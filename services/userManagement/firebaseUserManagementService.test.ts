@@ -6,7 +6,6 @@ import { app, auth } from "firebase-admin";
 import * as AdminAuth from "firebase-admin/auth"
 import App = app.App;
 import DecodedIdToken = auth.DecodedIdToken;
-import { UserRecord } from "firebase-admin/auth";
 
 describe("Firebase User Management Service", () => {
   let service: FirebaseUserManagementService;
@@ -93,13 +92,13 @@ describe("Firebase User Management Service", () => {
   });
   
   describe("updatePassword", () => {
-    it("Should retrieve the user by their email and update their password using the admin api", async () => {
+    it("Should retrieve the user by their token id and update their password using the admin api", async () => {
       const mockAuth: MockProxy<AdminAuth.Auth> = mock<AdminAuth.Auth>();
-      mockAuth.getUserByEmail.mockResolvedValue({ uid: "abc" } as unknown as UserRecord);
+      mockAuth.verifyIdToken.mockResolvedValue({ uid: "abc" } as unknown as DecodedIdToken);
       
       mockFirebaseAdminApp.auth.mockReturnValue(mockAuth);
       
-      await service.updatePassword("tester@test.com", "newPassword123");
+      await service.updatePassword("someToken", "newPassword123");
       
       expect(mockAuth.updateUser).toHaveBeenCalledWith("abc", { password: "newPassword123" });
     });

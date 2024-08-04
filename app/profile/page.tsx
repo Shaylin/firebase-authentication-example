@@ -1,24 +1,20 @@
-"use client";
-
 import styles from "./page.module.scss";
-import { useUser } from "@/contexts/userContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { redirect } from "next/navigation";
 import ProfileManagementForm from "@/components/profileManagementForm/profileManagementForm";
+import { cookies } from "next/headers";
+import verifyToken from "@/utils/verifyToken";
 
-export default function Profile() {
-  const { user } = useUser();
-  const router = useRouter();
-  
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user, router]);
+export default async function Profile() {
+  const token = cookies().get("token")?.value || "";
+  const verifiedUser = await verifyToken(token);
+
+  if (!verifiedUser) {
+    redirect("/login");
+  }
   
   return (
     <main className={styles.main}>
-      {!!user ?
+      {verifiedUser ?
         <>
           <h1>Profile Management</h1>
           <div className={styles.menu}>

@@ -1,75 +1,90 @@
 "use client";
 
-import { JSX, useEffect, useState } from "react";
+import React, { JSX, useState } from "react";
 import styles from "./profileManagement.module.scss";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Button from "@mui/material/Button";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useRouter } from "next/navigation";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
-import { useUser } from "@/contexts/userContext";
+import HomeIcon from "@mui/icons-material/Home";
+import Divider from "@mui/material/Divider";
+import TextField from "@mui/material/TextField";
+import Snackbar from "@mui/material/Snackbar";
+import { getCookie } from "cookies-next";
 
 export default function ProfileManagementForm(): JSX.Element {
-  const { user } = useUser();
   const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  const [hasUpdatedPassword, setHasUpdatedPassword] = useState<boolean>(false);
+  const [updatedPassword, setUpdatedPassword] = useState<string>("");
+  const [errorText, setErrorText] = useState<string>("");
   
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
+  const handleClose = (event: Event | React.SyntheticEvent<any>, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
     }
-  }, [user, router]);
-  
-  const initiateLogout = async () => {
-    setIsLoggingOut(true);
+    setHasUpdatedPassword(false);
   };
   
-  const logout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    router.push("/login?loggedOut=true");
+  const updatePassword = async () => {
+    try {
+      const token = getCookie("token") || "";
+      
+      const response = await fetch("/api/password", {
+        method: "PUT",
+        body: JSON.stringify({ userIdToken: token, password: updatedPassword })
+      });
+      
+      if (!response.ok) {
+        const responseBody = await response.json();
+        setErrorText(responseBody.error)
+      }
+      
+      setHasUpdatedPassword(true);
+    } catch (e) {
+      console.error(e);
+      setErrorText("There was an error updating your password.")
+      setHasUpdatedPassword(false);
+    }
   };
   
-  const navigateToProfile = () => {
-    router.push("/profile");
+  const navigateToHome = () => {
+    router.push("/");
   };
   
   return (
-    <>
-      {!!user ?
-        <>
-          <div className={styles.mainMenu}>
-            <Button variant="contained" fullWidth size="large" endIcon={<AccountCircleIcon/>}
-              onClick={navigateToProfile}>
-              Profile Management
-            </Button>
-            <Button variant="contained" fullWidth size="large" color="error" endIcon={<LogoutIcon/>}
-              onClick={initiateLogout}>
-              Log Out
-            </Button>
-          </div>
-        </> : <p>Unauthorized</p>
+    <div className={styles.mainMenu}>
+      <TextField
+        id="change-password-input"
+        label="Set A New Password"
+        type="password"
+        fullWidth
+        onChange={
+          (event) => {
+            setUpdatedPassword(event.target.value);
+            setErrorText("");
+          }
+        }
+      />
+      {
+        errorText && <p className={styles.errorText}>{errorText}</p>
       }
+      <Button variant="contained" fullWidth size="large" color="warning" endIcon={<LogoutIcon/>}
+        onClick={updatePassword}>
+        Update Password
+      </Button>
       
-      {isLoggingOut && <Dialog
-        open={isLoggingOut}
-        onClose={() => setIsLoggingOut(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Are you sure you want to log out?"}
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setIsLoggingOut(false)}>
-            No
-          </Button>
-          <Button onClick={logout} autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>}
-    </>
+      <Divider orientation="horizontal" flexItem/>
+      
+      <Button variant="contained" fullWidth size="large" endIcon={<HomeIcon/>}
+        onClick={navigateToHome}>
+        Home
+      </Button>
+      
+      <Snackbar
+        open={hasUpdatedPassword}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="Password updated successfully."
+      />
+    </div>
   );
 }

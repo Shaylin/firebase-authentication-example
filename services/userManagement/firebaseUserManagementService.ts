@@ -52,10 +52,10 @@ export default class FirebaseUserManagementService implements UserManagementServ
     return !!decodedIdToken;
   }
   
-  async updatePassword(email: string, newPassword: string): Promise<void> {
-    const userRecord = await this.firebaseAdminApp.auth().getUserByEmail(email);
+  async updatePassword(userIdToken: string, newPassword: string): Promise<void> {
+    const decodedIdToken = await this.firebaseAdminApp.auth().verifyIdToken(userIdToken);
     
-    await this.firebaseAdminApp.auth().updateUser(userRecord.uid, { password: newPassword });
+    await this.firebaseAdminApp.auth().updateUser(decodedIdToken.uid, { password: newPassword });
   }
   
   async login(email: string, password: string): Promise<string> {

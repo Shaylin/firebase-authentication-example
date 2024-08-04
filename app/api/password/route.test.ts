@@ -24,14 +24,14 @@ describe("Edit Password Route", () => {
         
         const request = {
           json: async () => {
-            return { email: "name@domain.com", password: "Password1234$" }
+            return { userIdToken: "tooken", password: "Password1234$" }
           }
         };
         
         const response = await PUT(request as unknown as NextRequest);
         
         expect(mockValidationService.isStrongPassword).toHaveBeenCalledWith("Password1234$");
-        expect(mockUserManagementService.updatePassword).toHaveBeenCalledWith("name@domain.com", "Password1234$");
+        expect(mockUserManagementService.updatePassword).toHaveBeenCalledWith("tooken", "Password1234$");
         
         expect(response.status).toBe(200);
         expect(await response.json()).toEqual({ message: "Password update successful." });
@@ -44,7 +44,7 @@ describe("Edit Password Route", () => {
         
         const request = {
           json: async () => {
-            return { email: "name@domain.com", password: "password1234$" }
+            return { useridToken: "name@domain.com", password: "password1234$" }
           }
         };
         
@@ -65,7 +65,7 @@ describe("Edit Password Route", () => {
         
         const request = {
           json: async () => {
-            return { email: "name@domain.com", password: "PAssword1234$" }
+            return { userIdToken: "name@domain.com", password: "PAssword1234$" }
           }
         };
         

@@ -1,4 +1,4 @@
 export default interface EditPasswordRequest {
-  email: string;
+  userIdToken: string;
   password: string;
 }

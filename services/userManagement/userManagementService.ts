@@ -5,7 +5,7 @@ export default interface UserManagementService {
   
   verifyUser(userIdToken: string): Promise<boolean>;
   
-  updatePassword(email: string, newPassword: string): Promise<void>;
+  updatePassword(userIdToken: string, newPassword: string): Promise<void>;
   
   logout(): Promise<void>;
 }

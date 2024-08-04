@@ -15,7 +15,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   }
   
   try {
-    await userManagementService.updatePassword(requestBody.email, requestBody.password);
+    await userManagementService.updatePassword(requestBody.userIdToken, requestBody.password);
     
     return NextResponse.json({ message: "Password update successful." }, { status: 200 });
   } catch {
