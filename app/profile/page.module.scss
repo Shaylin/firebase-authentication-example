@@ -1,0 +1,14 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  gap: 1rem;
+  min-height: 100vh;
+}
+
+.main .menu {
+  width: 100%;
+  max-width: 640px;
+}

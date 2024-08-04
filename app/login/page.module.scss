@@ -1,14 +1,11 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 2rem;
+  gap: 1rem;
   min-height: 100vh;
-}
-
-.main h1 {
-  text-align: center;
 }
 
 .main .menu {
@@ -16,5 +13,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 1rem;
+  width: 100%;
   max-width: 640px;
+}
+
+.main .menu p {
+  text-align: center;
+  font-size: 12px;
 }
