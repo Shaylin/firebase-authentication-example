@@ -5,7 +5,8 @@ import { cookies } from "next/headers";
 import verifyToken from "@/utils/verifyToken";
 
 export default async function Profile() {
-  const token = cookies().get("token")?.value || "";
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value || "";
   const verifiedUser = await verifyToken(token);
 
   if (!verifiedUser) {

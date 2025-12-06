@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export default async function Home() {
-  const token = cookies().get("token")?.value || "";
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value || "";
   const user = await verifyToken(token);
 
   if (!user) {
