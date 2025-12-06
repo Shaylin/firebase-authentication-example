@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "npx eslint app/ components/ services/ utils/",
     "test:api": "npx jest app/api/ --config app/api/jest.config.ts",
     "test:services": "npx jest services/ --config services/jest.config.ts",
     "test:client": "npx jest",
